@@ -1,7 +1,6 @@
-
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { Account, Transaction, TransactionData, TransferData } from '@/types/finance';
+import { Account, Transaction, TransactionData, TransferData, AccountType } from '@/types/finance';
 import { useToast } from '@/hooks/use-toast';
 
 interface FinanceContextType {
@@ -11,6 +10,8 @@ interface FinanceContextType {
   updateCreditCardBalance: (accountId: string, newBalance: number) => void;
   getTotalBalance: () => number;
   getTotalCreditDebt: () => number;
+  addAccount: (name: string, type: AccountType, initialBalance: number) => void;
+  deleteAccount: (accountId: string) => void;
 }
 
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
@@ -196,6 +197,48 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
   };
 
+  const addAccount = (name: string, type: AccountType, initialBalance: number) => {
+    const newAccount: Account = {
+      id: uuidv4(),
+      name,
+      type,
+      balance: initialBalance,
+      transactions: [],
+      ...(type === 'credit' ? { goal: 0 } : {})
+    };
+
+    setAccounts(currentAccounts => [...currentAccounts, newAccount]);
+
+    toast({
+      title: "Account created",
+      description: `New ${type} account "${name}" has been added`,
+    });
+  };
+
+  const deleteAccount = (accountId: string) => {
+    setAccounts(currentAccounts => {
+      const accountToDelete = currentAccounts.find(acc => acc.id === accountId);
+      
+      if (!accountToDelete) {
+        toast({
+          title: "Deletion failed",
+          description: "Account not found",
+          variant: "destructive"
+        });
+        return currentAccounts;
+      }
+
+      const updatedAccounts = currentAccounts.filter(acc => acc.id !== accountId);
+      
+      toast({
+        title: "Account deleted",
+        description: `${accountToDelete.name} has been removed`,
+      });
+      
+      return updatedAccounts;
+    });
+  };
+
   const getTotalBalance = () => {
     return accounts
       .filter(account => account.type !== 'credit')
@@ -217,6 +260,8 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         updateCreditCardBalance,
         getTotalBalance,
         getTotalCreditDebt,
+        addAccount,
+        deleteAccount,
       }}
     >
       {children}
