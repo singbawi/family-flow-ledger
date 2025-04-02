@@ -5,6 +5,7 @@ import { Account } from '@/types/finance';
 import TransactionList from './TransactionList';
 import TransactionForm from './TransactionForm';
 import CreditCardUpdate from './CreditCardUpdate';
+import RenameAccountForm from './RenameAccountForm';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
@@ -28,7 +29,15 @@ const AccountDetail: React.FC<AccountDetailProps> = ({ account, onBack }) => {
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h2 className="text-2xl font-semibold">{account.name}</h2>
+        <h2 className="text-2xl font-semibold flex items-center">
+          {account.name}
+          <span className="ml-2">
+            <RenameAccountForm 
+              accountId={account.id} 
+              currentName={account.name} 
+            />
+          </span>
+        </h2>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

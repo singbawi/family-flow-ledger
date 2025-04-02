@@ -12,6 +12,7 @@ interface FinanceContextType {
   getTotalCreditDebt: () => number;
   addAccount: (name: string, type: AccountType, initialBalance: number) => void;
   deleteAccount: (accountId: string) => void;
+  renameAccount: (accountId: string, newName: string) => void;
 }
 
 const FinanceContext = createContext<FinanceContextType | undefined>(undefined);
@@ -239,6 +240,34 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
   };
 
+  const renameAccount = (accountId: string, newName: string) => {
+    if (!newName.trim()) {
+      toast({
+        title: "Rename failed",
+        description: "Account name cannot be empty",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setAccounts(currentAccounts => {
+      return currentAccounts.map(account => {
+        if (account.id === accountId) {
+          toast({
+            title: "Account renamed",
+            description: `"${account.name}" is now "${newName}"`,
+          });
+          
+          return {
+            ...account,
+            name: newName
+          };
+        }
+        return account;
+      });
+    });
+  };
+
   const getTotalBalance = () => {
     return accounts
       .filter(account => account.type !== 'credit')
@@ -262,6 +291,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         getTotalCreditDebt,
         addAccount,
         deleteAccount,
+        renameAccount,
       }}
     >
       {children}
