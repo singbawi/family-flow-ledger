@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,13 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				finance: {
+					positive: '#10B981', // Green for positive transactions
+					negative: '#EF4444', // Red for negative transactions
+					neutral: '#6B7280', // Gray for neutral information
+					blue: '#2563EB',   // Blue for primary actions
+					purple: '#8B5CF6', // Purple for credit card related items
 				}
 			},
 			borderRadius: {
