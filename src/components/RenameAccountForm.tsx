@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,7 +16,7 @@ import {
   DialogTrigger,
   DialogClose
 } from '@/components/ui/dialog';
-import { Pencil, Loader2 } from 'lucide-react';
+import { Pencil } from 'lucide-react';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Account name is required'),
@@ -31,8 +31,6 @@ interface RenameAccountFormProps {
 
 const RenameAccountForm: React.FC<RenameAccountFormProps> = ({ accountId, currentName }) => {
   const { renameAccount } = useFinance();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
   
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -41,22 +39,13 @@ const RenameAccountForm: React.FC<RenameAccountFormProps> = ({ accountId, curren
     },
   });
 
-  const onSubmit = async (data: FormData) => {
-    setIsSubmitting(true);
-    
-    try {
-      renameAccount(accountId, data.name);
-      form.reset({ name: data.name });
-      setIsOpen(false);
-    } catch (error) {
-      console.error('Error renaming account:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
+  const onSubmit = (data: FormData) => {
+    renameAccount(accountId, data.name);
+    form.reset({ name: data.name });
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog>
       <DialogTrigger asChild>
         <Button variant="ghost" size="icon">
           <Pencil className="h-4 w-4" />
@@ -84,18 +73,9 @@ const RenameAccountForm: React.FC<RenameAccountFormProps> = ({ accountId, curren
             
             <DialogFooter className="pt-4">
               <DialogClose asChild>
-                <Button variant="outline" type="button" disabled={isSubmitting}>Cancel</Button>
+                <Button variant="outline" type="button">Cancel</Button>
               </DialogClose>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  'Save'
-                )}
-              </Button>
+              <Button type="submit">Save</Button>
             </DialogFooter>
           </form>
         </Form>
